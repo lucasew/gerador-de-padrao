@@ -199,6 +199,18 @@
             changeEstado("pronto")
         }
         window.addEventListener('load', () => {
+            // query params
+            const params = new URLSearchParams(document.location.search.substring(1))
+            console.log(params)
+            // puxa valores dos query params
+            if (params.get("imagem")) {
+                document.getElementById("imagem").src = params.get("imagem")
+            }
+            document.getElementById("altura").value = params.get("altura") || ""
+            document.getElementById("largura").value = params.get("largura") || ""
+            document.getElementById("borda").value = params.get("borda") || ""
+            document.getElementById("repeticoes").value = params.get("repeticoes") || "100"
+            // inscrição dos hooks
             window.addEventListener('drop', onDrop)
             window.addEventListener('dragover', (ev) => ev.preventDefault())
             const title = document.getElementById("title")
@@ -209,6 +221,7 @@
             document.getElementById('altura').addEventListener('change', rebuildPrintTree)
             document.getElementById('largura').addEventListener('change', rebuildPrintTree)
             document.getElementById('borda').addEventListener('change', rebuildPrintTree)
+            document.getElementById('repeticoes').addEventListener('change', updateRepeticoes)
             updateRepeticoes()
         })
     </script>
