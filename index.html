@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de padrões de imagem by lucasew</title>
+</head>
+<style>
+    img[src] {
+        page-break-inside: avoid;
+        padding: 5px;
+        margin: 2px;
+        border: 1px black solid;
+    }
+
+    header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 90vw;
+        padding: 10px;
+    }
+
+    header img {
+        max-height: 20vh;
+        max-width: 60vw;
+    }
+
+    h1 {
+        text-align: center;
+    }
+    h2, ul {
+        text-align: left;
+        font-weight: normal;
+        margin: .6rem;
+        height: 100%;
+    }
+
+    h1, h2 {
+        max-width: 100%;
+    }
+
+    @page {
+        margin: auto;
+        orphans: 0;
+        windows: 0;
+    }
+
+    @media print {
+        header {
+            display: none;
+        }
+
+        .printimg {
+            border-style: solid;
+            border-color: black;
+            padding: 5px;
+            margin: 2px;
+        }
+    }
+
+    @media not print {
+        body {
+            display: flex;
+            padding: 0;
+            margin: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .printimg {
+            display: none;
+        }
+    }
+
+    div#inputs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    div#inputs input {
+        padding: 5px;
+        margin: 5px;
+        border-radius: 5px;
+        border-style: solid;
+        box-shadow: none;
+    }
+    a {
+        text-decoration: none;
+        font-weight: bold;
+        color: inherit;
+    }
+    h1 {
+        font-weight: normal;
+    }
+</style>
+
+<body>
+    <input type="file" id="loadFile" accept="image/*" style="display:none" onchange="changeImage(this.files[0])" />
+    <header>
+        <img id="imagem"/><br>
+        <h1><span id="title">Gerador de padrões de imagem (by </span><a href="https://github.com/lucasew")>lucasew</a>)</h1>
+        <p>Este site serve para gerar padrões de uma imagem de forma que possa ser impresso e depois recortado.</p>
+        <h2>Como usar?</h2>
+        <ul>
+            <li>Arraste uma imagem ou selecione clicando no título.</li>
+            <li>Configure as opções a gosto.</li>
+            <li>Chame a <span style="font-weight: bold; cursor: pointer" onclick="window.print()">visualização de impressão</span> para gerar o pdf. (Ctrl+P)</li>
+        </ul>
+        <h2>É seguro?</h2>
+        <ul>
+            <li>O que acontece aqui fica aqui!</li>
+            <li>As imagens são processadas todas localmente.</li>
+            <li>A hospedagem apenas fornece um arquivo estático e o resto o seu navegador desenrola.</li>
+        </ul>
+        <h2>Opções</h2>
+        <div id="inputs">
+            <input id="altura" type="number" title="Altura (cm) (0 = automático)" placeholder="Altura (cm) (0 = automático)" />
+            <input id="largura" type="number" title="Largura (cm) (0 = automático)" placeholder="Largura (cm) (0 = automático)" />
+            <input id="borda" type="number" title="Borda (px)" placeholder="Borda (px)" />
+            <input id="repeticoes" type="number" title="Repetições" placeholder="Repetições" value="100" onchange="updateRepeticoes()"/>
+        </div>
+        <p><b>ESTADO:</b> <span id="estado">Não iniciado</span></p>
+    </header>
+    <script>
+        
+        document.body
+        function changeImage(to) {
+            const url = window.URL.createObjectURL(to)
+            document.getElementById("imagem").src = url
+            rebuildPrintTree()
+        }
+        function changeEstado(text) {
+            document.getElementById("estado").innerText = text
+        }
+        function onDrop(ev) {
+            ev.preventDefault()
+            console.log(ev)
+            changeImage(ev.dataTransfer.files[0])
+        }
+        function updateRepeticoes() {
+            const elem = document.getElementById('repeticoes')
+            const num = elem.valueAsNumber
+            if (isNaN(num)) {
+                return changeEstado("quantidade de repetições inválida")
+            }
+            document.querySelectorAll('.printimg').forEach((e) => e.parentElement.removeChild(e))
+            for (let i = 0; i < num; i++) {
+                const elem = document.createElement('img')
+                elem.className = "printimg"
+                document.body.appendChild(elem)
+            }
+            rebuildPrintTree()
+        }
+        function rebuildPrintTree() {
+            const imagem = document.getElementById("imagem").src
+            if (imagem === "") {
+                return changeEstado("sem imagem definida")
+            }
+            const altura = document.getElementById("altura").valueAsNumber
+            document.getElementById("altura").value
+            if (isNaN(altura)) {
+                return changeEstado("altura não é um número")
+            }
+            const largura = document.getElementById("largura").valueAsNumber
+            if (isNaN(largura)) {
+                return changeEstado("largura não é um número")
+            }
+            const borda = document.getElementById("borda").valueAsNumber
+            if (isNaN(borda)) {
+                return changeEstado("borda não é um número")
+            }
+            document.querySelectorAll(".printimg").forEach((e) => {
+                e.src = imagem
+                if (largura === 0) {
+                    e.style.height = "auto"
+                } else {
+                    e.style.height = `${largura}cm`
+                }
+                if (altura === 0) {
+                    e.style.width = "auto"
+                } else {
+                    e.style.width = `${altura}cm`
+                }
+                e.style.borderWidth = `${borda}px`
+            })
+            changeEstado("pronto")
+        }
+        window.addEventListener('load', () => {
+            window.addEventListener('drop', onDrop)
+            window.addEventListener('dragover', (ev) => ev.preventDefault())
+            const title = document.getElementById("title")
+            title.addEventListener('click', () => {
+                document.getElementById("loadFile").click()
+            })
+            title.style.cursor = 'pointer'
+            document.getElementById('altura').addEventListener('change', rebuildPrintTree)
+            document.getElementById('largura').addEventListener('change', rebuildPrintTree)
+            document.getElementById('borda').addEventListener('change', rebuildPrintTree)
+            updateRepeticoes()
+        })
+    </script>
+</body>
+
+</html>
