@@ -34,7 +34,7 @@
     h1 {
         text-align: center;
     }
-    h2, ul {
+    h2, ul, ol {
         text-align: left;
         font-weight: normal;
         margin: .6rem;
@@ -89,6 +89,20 @@
         justify-content: center;
         flex-wrap: wrap;
     }
+    div.inputItem {
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+        align-items: center;
+    }
+
+    div.inputItem input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    div.inputItem label {
+        text-align: center;
+    }
 
     div#inputs input {
         padding: 5px;
@@ -114,26 +128,40 @@
         <h1><span id="title">Gerador de padrões de imagem (by </span><a href="https://github.com/lucasew")>lucasew</a>)</h1>
         <p>Este site serve para gerar padrões de uma imagem de forma que possa ser impresso e depois recortado.</p>
         <p ><b>OBS: </b> não funciona em mobile. Pelo menos no meu celular usando Firefox não.</p>
+        <p><b>ESTADO:</b> <span id="estado">Não iniciado</span></p>
         <h2>Como usar?</h2>
-        <ul>
+        <ol>
             <li>Arraste uma imagem ou selecione clicando no título.</li>
             <li>Configure as opções a gosto.</li>
+            <li>Em <b>ESTADO</b>, quando estiver como pronto é porque deu tudo certo.</li>
             <li>Chame a <span style="font-weight: bold; cursor: pointer" onclick="window.print()">visualização de impressão</span> para gerar o pdf. (Ctrl+P)</li>
-        </ul>
+        </ol>
+        <h2>Opções</h2>
+        <div id="inputs">
+            <div class="inputItem">
+            <label for="altura">Altura (cm, 0 = automático)</label>
+            <input id="altura" type="number" title="Altura (cm) (0 = automático)"/>
+            </div>
+            <div class="inputItem">
+            <label for="largura">Largura (cm, 0 = automático)</label>
+            <input id="largura" type="number" title="Largura (cm) (0 = automático)" />
+            </div>
+            <div class="inputItem">
+            <label for="borda">Borda(px, 0 = sem borda)</label>
+            <input id="borda" type="number" title="Borda (px)" />
+            </div>
+            <div class="inputItem">
+            <label for="repeticoes">Repetições da imagem</label>
+            <input id="repeticoes" type="number" title="Repetições" value="100" onchange="updateRepeticoes()"/>
+            </div>
+        </div>
         <h2>É seguro?</h2>
         <ul>
             <li>O que acontece aqui fica aqui!</li>
             <li>As imagens são processadas todas localmente.</li>
-            <li>A hospedagem apenas fornece um arquivo estático e o resto o seu navegador desenrola.</li>
+            <li>A hospedagem apenas fornece este site de forma estática e o resto o seu navegador desenrola.</li>
         </ul>
-        <h2>Opções</h2>
-        <div id="inputs">
-            <input id="altura" type="number" title="Altura (cm) (0 = automático)" placeholder="Altura (cm) (0 = automático)" />
-            <input id="largura" type="number" title="Largura (cm) (0 = automático)" placeholder="Largura (cm) (0 = automático)" />
-            <input id="borda" type="number" title="Borda (px)" placeholder="Borda (px)" />
-            <input id="repeticoes" type="number" title="Repetições" placeholder="Repetições" value="100" onchange="updateRepeticoes()"/>
-        </div>
-        <p><b>ESTADO:</b> <span id="estado">Não iniciado</span></p>
+        
     </header>
     <script>
         
