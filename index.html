@@ -185,6 +185,10 @@
             if (isNaN(num)) {
                 return changeEstado("quantidade de repetições inválida")
             }
+            // SECURITY-NOTE: Limit repetitions to prevent client-side DoS
+            if (num > 2000) {
+                return changeEstado("Muitas repetições! O limite é 2000.")
+            }
             document.querySelectorAll('.printimg').forEach((e) => e.parentElement.removeChild(e))
             for (let i = 0; i < num; i++) {
                 const elem = document.createElement('img')
@@ -233,7 +237,13 @@
             console.log(params)
             // puxa valores dos query params
             if (params.get("imagem")) {
-                document.getElementById("imagem").src = params.get("imagem")
+                const imgUrl = params.get("imagem")
+                // SECURITY-NOTE: Prevent XSS by blocking javascript: protocol
+                if (imgUrl.trim().toLowerCase().startsWith("javascript:")) {
+                    console.error("Security: Blocked javascript: protocol in image URL")
+                } else {
+                    document.getElementById("imagem").src = imgUrl
+                }
             }
             document.getElementById("altura").value = params.get("altura") || ""
             document.getElementById("largura").value = params.get("largura") || ""
