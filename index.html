@@ -1,259 +1,293 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de padrões de imagem by lucasew</title>
-    <script defer src="https://analytics.app.lew.tec.br/script.js" data-website-id="9c0d7677-de21-40fb-880a-1a229363d90e"></script>
-</head>
-<style>
-    img[src] {
-        page-break-inside: avoid;
-        padding: 5px;
-        margin: 2px;
-        border: 1px black solid;
-    }
-
-    * {
-        max-width: 100%;
-    }
-    header {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-width: 90vw;
-        padding: 10px;
-    }
-
-    header img {
-        max-height: 20vh;
-        max-width: 60vw;
-    }
-
-    h1 {
-        text-align: center;
-    }
-    h2, ul, ol {
-        text-align: left;
-        font-weight: normal;
-        margin: .6rem;
-        height: 100%;
-        align-self: flex-start;
-    }
-
-    h1, h2 {
-        max-width: 100%;
-    }
-
-    @page {
-        margin: auto;
-        orphans: 0;
-        windows: 0;
-    }
-
-    @media print {
-        header {
-            display: none;
-        }
-
-        .printimg {
-            border-style: solid;
-            border-color: black;
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Gerador de padrões de imagem by lucasew</title>
+        <script
+            defer
+            src="https://analytics.app.lew.tec.br/script.js"
+            data-website-id="9c0d7677-de21-40fb-880a-1a229363d90e"
+        ></script>
+    </head>
+    <style>
+        img[src] {
+            page-break-inside: avoid;
             padding: 5px;
             margin: 2px;
+            border: 1px black solid;
         }
-    }
-    body {
-        margin: 0;
-        padding: 0;
-    }
 
-    @media not print {
+        * {
+            max-width: 100%;
+        }
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90vw;
+            padding: 10px;
+        }
+
+        header img {
+            max-height: 20vh;
+            max-width: 60vw;
+        }
+
+        h1 {
+            text-align: center;
+        }
+        h2,
+        ul,
+        ol {
+            text-align: left;
+            font-weight: normal;
+            margin: 0.6rem;
+            height: 100%;
+            align-self: flex-start;
+        }
+
+        h1,
+        h2 {
+            max-width: 100%;
+        }
+
+        @page {
+            margin: auto;
+            orphans: 0;
+            windows: 0;
+        }
+
+        @media print {
+            header {
+                display: none;
+            }
+
+            .printimg {
+                border-style: solid;
+                border-color: black;
+                padding: 5px;
+                margin: 2px;
+            }
+        }
         body {
+            margin: 0;
+            padding: 0;
+        }
+
+        @media not print {
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100vw;
+                min-height: 100vh;
+            }
+
+            .printimg {
+                display: none;
+            }
+        }
+
+        div#inputs {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100vw;
-            min-height: 100vh;
+            flex-wrap: wrap;
+        }
+        div.inputItem {
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+            align-items: center;
         }
 
-        .printimg {
-            display: none;
+        div.inputItem input {
+            width: 100%;
+            box-sizing: border-box;
         }
-    }
+        div.inputItem label {
+            text-align: center;
+        }
 
-    div#inputs {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    div.inputItem {
-        display: flex;
-        flex-direction: column;
-        padding: 5px;
-        align-items: center;
-    }
+        div#inputs input {
+            padding: 5px;
+            margin: 5px;
+            border-radius: 5px;
+            border-style: solid;
+            box-shadow: none;
+        }
+        a {
+            text-decoration: none;
+            font-weight: bold;
+            color: inherit;
+        }
+        h1 {
+            font-weight: normal;
+        }
+    </style>
 
-    div.inputItem input {
-        width: 100%;
-        box-sizing: border-box;
-    }
-    div.inputItem label {
-        text-align: center;
-    }
-
-    div#inputs input {
-        padding: 5px;
-        margin: 5px;
-        border-radius: 5px;
-        border-style: solid;
-        box-shadow: none;
-    }
-    a {
-        text-decoration: none;
-        font-weight: bold;
-        color: inherit;
-    }
-    h1 {
-        font-weight: normal;
-    }
-</style>
-
-<body>
-    <input type="file" id="loadFile" accept="image/*" style="display:none" onchange="changeImage(this.files[0])" />
-    <header>
-        <img id="imagem"/><br>
-        <h1><span id="title">Gerador de padrões de imagem (by </span><a href="https://github.com/lucasew")>lucasew</a>)</h1>
-        <p>Este site serve para gerar padrões de uma imagem de forma que possa ser impresso e depois recortado.</p>
-        <p ><b>OBS: </b> não funciona em mobile. Pelo menos no meu celular usando Firefox não.</p>
-        <p><b>ESTADO:</b> <span id="estado">Não iniciado</span></p>
-        <h2>Como usar?</h2>
-        <ol>
-            <li>Arraste uma imagem ou selecione clicando no título.</li>
-            <li>Configure as opções a gosto.</li>
-            <li>Em <b>ESTADO</b>, quando estiver como pronto é porque deu tudo certo.</li>
-            <li>Chame a <span style="font-weight: bold; cursor: pointer" onclick="window.print()">visualização de impressão</span> para gerar o pdf. (Ctrl+P)</li>
-        </ol>
-        <h2>Opções</h2>
-        <div id="inputs">
-            <div class="inputItem">
-            <label for="altura">Altura (cm, 0 = automático)</label>
-            <input id="altura" type="number" title="Altura (cm) (0 = automático)"/>
+    <body>
+        <input
+            type="file"
+            id="loadFile"
+            accept="image/*"
+            style="display: none"
+            onchange="changeImage(this.files[0])"
+        />
+        <header>
+            <img id="imagem" /><br />
+            <h1>
+                <span id="title">Gerador de padrões de imagem (by </span
+                ><a href="https://github.com/lucasew" )>lucasew</a>)
+            </h1>
+            <p>
+                Este site serve para gerar padrões de uma imagem de forma que possa ser impresso e
+                depois recortado.
+            </p>
+            <p>
+                <b>OBS: </b> não funciona em mobile. Pelo menos no meu celular usando Firefox não.
+            </p>
+            <p><b>ESTADO:</b> <span id="estado">Não iniciado</span></p>
+            <h2>Como usar?</h2>
+            <ol>
+                <li>Arraste uma imagem ou selecione clicando no título.</li>
+                <li>Configure as opções a gosto.</li>
+                <li>Em <b>ESTADO</b>, quando estiver como pronto é porque deu tudo certo.</li>
+                <li>
+                    Chame a
+                    <span style="font-weight: bold; cursor: pointer" onclick="window.print()"
+                        >visualização de impressão</span
+                    >
+                    para gerar o pdf. (Ctrl+P)
+                </li>
+            </ol>
+            <h2>Opções</h2>
+            <div id="inputs">
+                <div class="inputItem">
+                    <label for="altura">Altura (cm, 0 = automático)</label>
+                    <input id="altura" type="number" title="Altura (cm) (0 = automático)" />
+                </div>
+                <div class="inputItem">
+                    <label for="largura">Largura (cm, 0 = automático)</label>
+                    <input id="largura" type="number" title="Largura (cm) (0 = automático)" />
+                </div>
+                <div class="inputItem">
+                    <label for="borda">Borda(px, 0 = sem borda)</label>
+                    <input id="borda" type="number" title="Borda (px)" />
+                </div>
+                <div class="inputItem">
+                    <label for="repeticoes">Repetições da imagem</label>
+                    <input
+                        id="repeticoes"
+                        type="number"
+                        title="Repetições"
+                        value="100"
+                        onchange="updateRepeticoes()"
+                    />
+                </div>
             </div>
-            <div class="inputItem">
-            <label for="largura">Largura (cm, 0 = automático)</label>
-            <input id="largura" type="number" title="Largura (cm) (0 = automático)" />
-            </div>
-            <div class="inputItem">
-            <label for="borda">Borda(px, 0 = sem borda)</label>
-            <input id="borda" type="number" title="Borda (px)" />
-            </div>
-            <div class="inputItem">
-            <label for="repeticoes">Repetições da imagem</label>
-            <input id="repeticoes" type="number" title="Repetições" value="100" onchange="updateRepeticoes()"/>
-            </div>
-        </div>
-        <h2>É seguro?</h2>
-        <ul>
-            <li>O que acontece aqui fica aqui!</li>
-            <li>As imagens são processadas todas localmente.</li>
-            <li>A hospedagem apenas fornece este site de forma estática e o resto o seu navegador desenrola.</li>
-        </ul>
-        
-    </header>
-    <script>
-        
-        function changeImage(to) {
-            const url = window.URL.createObjectURL(to)
-            document.getElementById("imagem").src = url
-            rebuildPrintTree()
-        }
-        function changeEstado(text) {
-            document.getElementById("estado").innerText = text
-        }
-        function onDrop(ev) {
-            ev.preventDefault()
-            console.log(ev)
-            changeImage(ev.dataTransfer.files[0])
-        }
-        function updateRepeticoes() {
-            const elem = document.getElementById('repeticoes')
-            const num = elem.valueAsNumber
-            if (isNaN(num)) {
-                return changeEstado("quantidade de repetições inválida")
+            <h2>É seguro?</h2>
+            <ul>
+                <li>O que acontece aqui fica aqui!</li>
+                <li>As imagens são processadas todas localmente.</li>
+                <li>
+                    A hospedagem apenas fornece este site de forma estática e o resto o seu
+                    navegador desenrola.
+                </li>
+            </ul>
+        </header>
+        <script>
+            function changeImage(to) {
+                const url = window.URL.createObjectURL(to);
+                document.getElementById('imagem').src = url;
+                rebuildPrintTree();
             }
-            document.querySelectorAll('.printimg').forEach((e) => e.parentElement.removeChild(e))
-            for (let i = 0; i < num; i++) {
-                const elem = document.createElement('img')
-                elem.className = "printimg"
-                document.body.appendChild(elem)
+            function changeEstado(text) {
+                document.getElementById('estado').innerText = text;
             }
-            rebuildPrintTree()
-        }
-        function rebuildPrintTree() {
-            const imagem = document.getElementById("imagem").src
-            if (imagem === "") {
-                return changeEstado("sem imagem definida")
+            function onDrop(ev) {
+                ev.preventDefault();
+                console.log(ev);
+                changeImage(ev.dataTransfer.files[0]);
             }
-            const altura = document.getElementById("altura").valueAsNumber
-            document.getElementById("altura").value
-            if (isNaN(altura)) {
-                return changeEstado("altura não é um número")
-            }
-            const largura = document.getElementById("largura").valueAsNumber
-            if (isNaN(largura)) {
-                return changeEstado("largura não é um número")
-            }
-            const borda = document.getElementById("borda").valueAsNumber
-            if (isNaN(borda)) {
-                return changeEstado("borda não é um número")
-            }
-            document.querySelectorAll(".printimg").forEach((e) => {
-                e.src = imagem
-                if (largura === 0) {
-                    e.style.height = "auto"
-                } else {
-                    e.style.height = `${largura}cm`
+            function updateRepeticoes() {
+                const elem = document.getElementById('repeticoes');
+                const num = elem.valueAsNumber;
+                if (isNaN(num)) {
+                    return changeEstado('quantidade de repetições inválida');
                 }
-                if (altura === 0) {
-                    e.style.width = "auto"
-                } else {
-                    e.style.width = `${altura}cm`
+                document
+                    .querySelectorAll('.printimg')
+                    .forEach((e) => e.parentElement.removeChild(e));
+                for (let i = 0; i < num; i++) {
+                    const elem = document.createElement('img');
+                    elem.className = 'printimg';
+                    document.body.appendChild(elem);
                 }
-                e.style.borderWidth = `${borda}px`
-            })
-            changeEstado("pronto")
-        }
-        window.addEventListener('load', () => {
-            // query params
-            const params = new URLSearchParams(document.location.search.substring(1))
-            console.log(params)
-            // puxa valores dos query params
-            if (params.get("imagem")) {
-                document.getElementById("imagem").src = params.get("imagem")
+                rebuildPrintTree();
             }
-            document.getElementById("altura").value = params.get("altura") || ""
-            document.getElementById("largura").value = params.get("largura") || ""
-            document.getElementById("borda").value = params.get("borda") || ""
-            document.getElementById("repeticoes").value = params.get("repeticoes") || "100"
-            // inscrição dos hooks
-            window.addEventListener('drop', onDrop)
-            window.addEventListener('dragover', (ev) => ev.preventDefault())
-            const title = document.getElementById("title")
-            title.addEventListener('click', () => {
-                document.getElementById("loadFile").click()
-            })
-            title.style.cursor = 'pointer'
-            document.getElementById('altura').addEventListener('change', rebuildPrintTree)
-            document.getElementById('largura').addEventListener('change', rebuildPrintTree)
-            document.getElementById('borda').addEventListener('change', rebuildPrintTree)
-            document.getElementById('repeticoes').addEventListener('change', updateRepeticoes)
-            updateRepeticoes()
-        })
-    </script>
-</body>
-
+            function rebuildPrintTree() {
+                const imagem = document.getElementById('imagem').src;
+                if (imagem === '') {
+                    return changeEstado('sem imagem definida');
+                }
+                const altura = document.getElementById('altura').valueAsNumber;
+                document.getElementById('altura').value;
+                if (isNaN(altura)) {
+                    return changeEstado('altura não é um número');
+                }
+                const largura = document.getElementById('largura').valueAsNumber;
+                if (isNaN(largura)) {
+                    return changeEstado('largura não é um número');
+                }
+                const borda = document.getElementById('borda').valueAsNumber;
+                if (isNaN(borda)) {
+                    return changeEstado('borda não é um número');
+                }
+                document.querySelectorAll('.printimg').forEach((e) => {
+                    e.src = imagem;
+                    if (largura === 0) {
+                        e.style.height = 'auto';
+                    } else {
+                        e.style.height = `${largura}cm`;
+                    }
+                    if (altura === 0) {
+                        e.style.width = 'auto';
+                    } else {
+                        e.style.width = `${altura}cm`;
+                    }
+                    e.style.borderWidth = `${borda}px`;
+                });
+                changeEstado('pronto');
+            }
+            window.addEventListener('load', () => {
+                // query params
+                const params = new URLSearchParams(document.location.search.substring(1));
+                console.log(params);
+                // puxa valores dos query params
+                if (params.get('imagem')) {
+                    document.getElementById('imagem').src = params.get('imagem');
+                }
+                document.getElementById('altura').value = params.get('altura') || '';
+                document.getElementById('largura').value = params.get('largura') || '';
+                document.getElementById('borda').value = params.get('borda') || '';
+                document.getElementById('repeticoes').value = params.get('repeticoes') || '100';
+                // inscrição dos hooks
+                window.addEventListener('drop', onDrop);
+                window.addEventListener('dragover', (ev) => ev.preventDefault());
+                const title = document.getElementById('title');
+                title.addEventListener('click', () => {
+                    document.getElementById('loadFile').click();
+                });
+                title.style.cursor = 'pointer';
+                document.getElementById('altura').addEventListener('change', rebuildPrintTree);
+                document.getElementById('largura').addEventListener('change', rebuildPrintTree);
+                document.getElementById('borda').addEventListener('change', rebuildPrintTree);
+                document.getElementById('repeticoes').addEventListener('change', updateRepeticoes);
+                updateRepeticoes();
+            });
+        </script>
+    </body>
 </html>

@@ -1,0 +1,26 @@
+{
+    "name": "app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lucasew/gerador-de-padrao.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/lucasew/gerador-de-padrao/issues"
+    },
+    "homepage": "https://github.com/lucasew/gerador-de-padrao#readme",
+    "devDependencies": {
+        "eslint": "^8.57.1",
+        "eslint-plugin-html": "^8.1.4",
+        "prettier": "^3.8.1"
+    }
+}

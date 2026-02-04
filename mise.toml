@@ -1,0 +1,10 @@
+[tasks]
+"install" = "npm install"
+"lint:eslint" = "npx eslint . --ext .js,.html"
+"lint:prettier" = "npx prettier --check ."
+lint = { depends = ["lint:*"] }
+"fmt:prettier" = "npx prettier --write ."
+fmt = { depends = ["fmt:*"] }
+test = "echo 'No tests implemented'"
+codegen = "echo 'No codegen needed'"
+ci = { depends = ["lint", "test"] }
