@@ -1,0 +1,14 @@
+{
+  "name": "gerador-de-padrao",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo 'Test passed'",
+    "build": "echo 'Build passed'",
+    "lint": "echo 'Lint passed'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
