@@ -1,5 +1,5 @@
 [tasks]
-ci = "mise run lint && mise run build && mise run test"
-build = "echo 'Build complete (static site)'"
+ci = { depends = ["lint", "build", "test"] }
+build = "test -f index.html"
 lint = "echo 'Lint complete'"
 test = "echo 'Test complete'"
