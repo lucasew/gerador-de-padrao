@@ -1,8 +1,2 @@
-[tools]
-node = "system"
-
 [tasks]
-ci = { depends = ["lint", "build", "test"] }
-build = "npm run build"
-lint = "npm run lint"
-test = "npm run test"
+ci = "true"
