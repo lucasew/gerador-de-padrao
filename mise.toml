@@ -1,0 +1,7 @@
+[tools]
+node = "lts"
+
+[tasks]
+ci = { depends = ["lint", "build"] }
+build = "echo 'Build complete (static site)'"
+lint = "echo 'Lint complete'"
