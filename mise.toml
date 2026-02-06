@@ -2,6 +2,7 @@
 node = "lts"
 
 [tasks]
-ci = { depends = ["lint", "build"] }
+ci = { depends = ["lint", "build", "test"] }
 build = "echo 'Build complete (static site)'"
 lint = "echo 'Lint complete'"
+test = "npm test"
