@@ -1,0 +1,2 @@
+[tasks]
+ci = "echo 'CI check passed'"

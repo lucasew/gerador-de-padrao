@@ -166,19 +166,50 @@
     </header>
     <script>
         
+        /**
+         * Updates the source of the main image and triggers a rebuild of the print tree.
+         *
+         * @param {File | Blob} to - The file object representing the new image.
+         * Creates an object URL for the file and sets it as the src of the #imagem element.
+         */
         function changeImage(to) {
             const url = window.URL.createObjectURL(to)
             document.getElementById("imagem").src = url
             rebuildPrintTree()
         }
+
+        /**
+         * Updates the status text displayed to the user.
+         *
+         * @param {string} text - The status message to display.
+         */
         function changeEstado(text) {
             document.getElementById("estado").innerText = text
         }
+
+        /**
+         * Handles the drop event for image files.
+         * Prevents the default browser behavior and processes the dropped file.
+         *
+         * @param {DragEvent} ev - The drag event containing the file.
+         */
         function onDrop(ev) {
             ev.preventDefault()
             console.log(ev)
             changeImage(ev.dataTransfer.files[0])
         }
+
+        /**
+         * Updates the number of image repetitions for the print layout.
+         *
+         * DOM Side Effects:
+         * - Reads value from #repeticoes input.
+         * - Removes all existing .printimg elements.
+         * - Creates new img elements and appends them to the body.
+         * - Triggers rebuildPrintTree() to update styles.
+         *
+         * Handles invalid input by displaying an error state.
+         */
         function updateRepeticoes() {
             const elem = document.getElementById('repeticoes')
             const num = elem.valueAsNumber
@@ -193,6 +224,18 @@
             }
             rebuildPrintTree()
         }
+
+        /**
+         * Applies styles and dimensions to all print images based on user inputs.
+         *
+         * Logic:
+         * - Reads height, width, and border settings.
+         * - Validates inputs (checks for NaN).
+         * - Updates src and style properties for all .printimg elements.
+         * - 0 for height/width is treated as "auto".
+         *
+         * Updates state to "pronto" upon success, or an error message if validation fails.
+         */
         function rebuildPrintTree() {
             const imagem = document.getElementById("imagem").src
             if (imagem === "") {
@@ -227,6 +270,14 @@
             })
             changeEstado("pronto")
         }
+
+        /**
+         * Initializes the application on window load.
+         *
+         * - Parses query parameters to populate initial input values.
+         * - Sets up event listeners for drag-and-drop and input changes.
+         * - Triggers initial rendering.
+         */
         window.addEventListener('load', () => {
             // query params
             const params = new URLSearchParams(document.location.search.substring(1))
