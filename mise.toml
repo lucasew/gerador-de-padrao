@@ -1,6 +1,5 @@
 [tasks]
 ci = { depends = ["lint", "build", "test"] }
-build = "true"
-install = "true"
+build = "echo 'Build complete'"
 lint = "echo 'Lint complete'"
-test = "echo 'Test complete'"
+test = "npm test"
