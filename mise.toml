@@ -1,2 +1,2 @@
 [tasks]
-ci = "echo 'CI passed'"
+ci = { depends = [] }
