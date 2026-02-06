@@ -1,6 +1,3 @@
-[tools]
-node = "20"
-
 [tasks]
 ci = "mise run lint && mise run build && mise run test"
 build = "echo 'Build complete (static site)'"
