@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.html",
   "scripts": {
-    "test": "echo 'Test passed'",
-    "build": "echo 'Build passed'",
-    "lint": "echo 'Lint passed'"
+    "test": "sleep 1 && echo 'Test passed'",
+    "build": "sleep 1 && echo 'Build passed'",
+    "lint": "sleep 1 && echo 'Lint passed'"
   },
   "keywords": [],
   "author": "",

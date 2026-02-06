@@ -1,5 +1,8 @@
+[tools]
+node = "system"
+
 [tasks]
-ci = { depends = ["check_*"] }
-check_build = "echo 'Build complete'"
-check_lint = "echo 'Lint complete'"
-check_test = "echo 'Test complete'"
+ci = { depends = ["lint", "build", "test"] }
+build = "npm run build"
+lint = "npm run lint"
+test = "npm run test"
