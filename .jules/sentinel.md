@@ -1,0 +1,1 @@
+- 2025-02-05: Unbounded loops based on user input allow client-side DoS; enforce strict maximums.

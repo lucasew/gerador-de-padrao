@@ -126,7 +126,7 @@
     <input type="file" id="loadFile" accept="image/*" style="display:none" onchange="changeImage(this.files[0])" />
     <header>
         <img id="imagem"/><br>
-        <h1><span id="title">Gerador de padrões de imagem (by </span><a href="https://github.com/lucasew")>lucasew</a>)</h1>
+        <h1><span id="title">Gerador de padrões de imagem (by </span><a href="https://github.com/lucasew">lucasew</a>)</h1>
         <p>Este site serve para gerar padrões de uma imagem de forma que possa ser impresso e depois recortado.</p>
         <p ><b>OBS: </b> não funciona em mobile. Pelo menos no meu celular usando Firefox não.</p>
         <p><b>ESTADO:</b> <span id="estado">Não iniciado</span></p>
@@ -153,7 +153,7 @@
             </div>
             <div class="inputItem">
             <label for="repeticoes">Repetições da imagem</label>
-            <input id="repeticoes" type="number" title="Repetições" value="100" onchange="updateRepeticoes()"/>
+            <input id="repeticoes" type="number" title="Repetições" value="100" max="5000" onchange="updateRepeticoes()"/>
             </div>
         </div>
         <h2>É seguro?</h2>
@@ -181,9 +181,14 @@
         }
         function updateRepeticoes() {
             const elem = document.getElementById('repeticoes')
-            const num = elem.valueAsNumber
+            let num = elem.valueAsNumber
             if (isNaN(num)) {
                 return changeEstado("quantidade de repetições inválida")
+            }
+            if (num > 5000) {
+                num = 5000
+                elem.value = 5000
+                changeEstado("limite de repetições (5000) atingido")
             }
             document.querySelectorAll('.printimg').forEach((e) => e.parentElement.removeChild(e))
             for (let i = 0; i < num; i++) {
