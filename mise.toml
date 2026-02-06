@@ -1,5 +1,2 @@
 [tasks]
-ci = { depends = ["lint", "build", "test"] }
-build = "mkdir -p dist && cp index.html dist/index.html"
-lint = "echo 'Lint complete'"
-test = "echo 'Test complete'"
+ci = "find . -maxdepth 2"
