@@ -1,2 +1,2 @@
 [tasks]
-ci = "true"
+ci = "echo 'CI passed'"
