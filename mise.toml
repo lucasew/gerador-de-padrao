@@ -1,5 +1,5 @@
 [tasks]
 ci = { depends = ["lint", "build", "test"] }
-build = "test -f index.html"
+build = "ls index.html"
 lint = "echo 'Lint complete'"
 test = "echo 'Test complete'"
