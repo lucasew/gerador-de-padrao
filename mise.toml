@@ -1,5 +1,5 @@
 [tools]
-node = "lts"
+node = "20"
 
 [tasks]
 ci = { depends = ["lint", "build", "test"] }
