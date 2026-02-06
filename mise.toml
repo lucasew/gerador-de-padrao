@@ -1,2 +1,2 @@
 [tasks]
-ci = "find . -maxdepth 2"
+ci = "exit 0"
