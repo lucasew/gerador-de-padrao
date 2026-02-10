@@ -1,0 +1,1 @@
+- 2026-02-10: Client-side loops based on user input must have explicit bounds to prevent DoS.
