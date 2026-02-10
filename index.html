@@ -166,14 +166,34 @@
     </header>
     <script>
         
+        /**
+         * Updates the source image for the pattern generator.
+         * Creates a temporary object URL for the uploaded file and triggers a rebuild.
+         *
+         * @param {File} to - The image file object (from input or drag-and-drop).
+         */
         function changeImage(to) {
             const url = window.URL.createObjectURL(to)
             document.getElementById("imagem").src = url
             rebuildPrintTree()
         }
+
+        /**
+         * Updates the status text displayed to the user.
+         * Used to show errors or readiness state.
+         *
+         * @param {string} text - The message to display in the "ESTADO" field.
+         */
         function changeEstado(text) {
             document.getElementById("estado").innerText = text
         }
+
+        /**
+         * Handles the file drop event on the window.
+         * Prevents default browser behavior (opening file) and processes the dropped image.
+         *
+         * @param {DragEvent} ev - The drag event containing the file.
+         */
         function onDrop(ev) {
             ev.preventDefault()
             console.log(ev)
@@ -227,6 +247,12 @@
             })
             changeEstado("pronto")
         }
+        /**
+         * Initializes the application on page load.
+         * - Parses query parameters for initial configuration (image URL, dimensions).
+         * - Sets up event listeners for drag-and-drop, file input, and configuration changes.
+         * - Triggers initial render if parameters are present.
+         */
         window.addEventListener('load', () => {
             // query params
             const params = new URLSearchParams(document.location.search.substring(1))
