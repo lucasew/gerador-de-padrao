@@ -199,6 +199,13 @@
             console.log(ev)
             changeImage(ev.dataTransfer.files[0])
         }
+        /**
+         * Updates the number of image repetitions based on user input.
+         * Clears existing pattern elements and creates new ones.
+         *
+         * @warning This function performs synchronous DOM manipulation in a loop.
+         *          Large input values can cause the browser to freeze.
+         */
         function updateRepeticoes() {
             const elem = document.getElementById('repeticoes')
             const num = elem.valueAsNumber
@@ -213,6 +220,13 @@
             }
             rebuildPrintTree()
         }
+        /**
+         * Reapplies styles and dimensions to all generated pattern images.
+         * Triggered by configuration changes or new image uploads.
+         *
+         * @description Validates inputs (height, width, border) and updates the status.
+         *              If height or width is 0, sets the style to "auto".
+         */
         function rebuildPrintTree() {
             const imagem = document.getElementById("imagem").src
             if (imagem === "") {
