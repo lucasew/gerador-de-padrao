@@ -6,7 +6,7 @@ node = "22.13.1"
 install = { depends = ["install:*"] }
 "install:workspaced" = "bash scripts/install-workspaced.sh"
 codegen = "true"
-lint = "workspaced codebase lint"
-fmt = "workspaced codebase format"
+lint = { run = "$HOME/.local/bin/workspaced codebase lint", depends = ["install:workspaced"] }
+fmt = { run = "$HOME/.local/bin/workspaced codebase format", depends = ["install:workspaced"] }
 test = "true"
 ci = { depends = ["lint", "test"] }
