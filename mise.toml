@@ -1,2 +1,12 @@
+[tools]
+go = "1.24.0"
+node = "22.13.1"
+
 [tasks]
-ci = "echo 'CI passed'"
+install = { depends = ["install:*"] }
+"install:workspaced" = "bash scripts/install-workspaced.sh"
+codegen = "true"
+lint = "workspaced codebase lint"
+fmt = "workspaced codebase format"
+test = "true"
+ci = { depends = ["lint", "test"] }

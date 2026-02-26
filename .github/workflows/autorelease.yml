@@ -1,0 +1,63 @@
+name: autorelease
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+        with:
+          install: true
+
+      - name: Install dependencies
+        run: mise run install
+
+      - name: Run codegen
+        run: mise run codegen
+
+      - name: Check for changes and create PR
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Changes detected"
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            BRANCH_NAME="codegen-update-${GITHUB_RUN_ID}"
+            git checkout -b "$BRANCH_NAME"
+            git add .
+            git commit -m "chore: update generated code"
+            git push origin "$BRANCH_NAME"
+            gh pr create --title "chore: update generated code" --body "Automated PR created by CI to update generated code." --base "${GITHUB_REF_NAME}" --head "$BRANCH_NAME"
+          else
+            echo "No changes detected"
+          fi
+
+      - name: Run CI
+        run: mise run ci
+
+      - name: Create Release
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create ${{ github.ref_name }} --generate-notes
+
+      - name: Upload Artifacts
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: index.html
