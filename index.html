@@ -123,7 +123,7 @@
 </style>
 
 <body>
-    <input type="file" id="loadFile" accept="image/*" style="display:none" onchange="changeImage(this.files[0])" />
+    <input type="file" id="loadFile" accept="image/*" style="display:none" onchange="window.appController.changeImage(this.files[0])" />
     <header>
         <img id="imagem"/><br>
         <h1><span id="title">Gerador de padrões de imagem (by </span><a href="https://github.com/lucasew")>lucasew</a>)</h1>
@@ -153,7 +153,7 @@
             </div>
             <div class="inputItem">
             <label for="repeticoes">Repetições da imagem</label>
-            <input id="repeticoes" type="number" title="Repetições" value="100" onchange="updateRepeticoes()"/>
+            <input id="repeticoes" type="number" title="Repetições" value="100" max="1000" onchange="window.appController.updateRepeticoes()"/>
             </div>
         </div>
         <h2>É seguro?</h2>
@@ -165,102 +165,153 @@
         
     </header>
     <script>
+        const MAX_REPETITIONS = 1000;
         
-        /**
-         * Updates the source image for the pattern generator.
-         * Creates a temporary object URL for the uploaded file and triggers a rebuild.
-         *
-         * @param {File} to - The image file object (from input or drag-and-drop).
-         */
-        function changeImage(to) {
-            const url = window.URL.createObjectURL(to)
-            document.getElementById("imagem").src = url
-            rebuildPrintTree()
+        class AppController {
+            constructor() {
+                this.currentObjectUrl = null;
+                this.onDrop = this.onDrop.bind(this);
+                this.changeImage = this.changeImage.bind(this);
+                this.updateRepeticoes = this.updateRepeticoes.bind(this);
+                this.rebuildPrintTree = this.rebuildPrintTree.bind(this);
+                this.changeEstado = this.changeEstado.bind(this);
+                this.reportError = this.reportError.bind(this);
+            }
+
+            /**
+             * Updates the source image for the pattern generator.
+             * Creates a temporary object URL for the uploaded file and triggers a rebuild.
+             * Revokes the previously created object URL to prevent memory leaks.
+             *
+             * @param {File} to - The image file object (from input or drag-and-drop).
+             */
+            changeImage(to) {
+                try {
+                    if (this.currentObjectUrl) {
+                        window.URL.revokeObjectURL(this.currentObjectUrl);
+                    }
+                    this.currentObjectUrl = window.URL.createObjectURL(to);
+                    document.getElementById("imagem").src = this.currentObjectUrl;
+                    this.rebuildPrintTree();
+                } catch (e) {
+                    this.reportError(e, { source: 'changeImage' });
+                }
+            }
+
+            /**
+             * Updates the status text displayed to the user.
+             * Used to show readiness state or non-critical info.
+             *
+             * @param {string} text - The message to display in the "ESTADO" field.
+             */
+            changeEstado(text) {
+                document.getElementById("estado").innerText = text;
+            }
+
+            /**
+             * Centralized error reporting function.
+             * Logs errors to the console with context and updates the UI status.
+             *
+             * @param {Error|string} error - The error message or object to report.
+             * @param {Object} [context] - Additional context about the error.
+             */
+            reportError(error, context = {}) {
+                const message = error instanceof Error ? error.message : String(error);
+                console.error("Application Error:", message, context);
+                this.changeEstado(message);
+            }
+
+            /**
+             * Handles the file drop event on the window.
+             * Prevents default browser behavior (opening file) and processes the dropped image.
+             *
+             * @param {DragEvent} ev - The drag event containing the file.
+             */
+            onDrop(ev) {
+                ev.preventDefault();
+                console.log(ev);
+                this.changeImage(ev.dataTransfer.files[0]);
+            }
+
+            /**
+             * Updates the number of image repetitions based on user input.
+             * Clears existing pattern elements and creates new ones.
+             *
+             * @warning This function performs synchronous DOM manipulation in a loop.
+             *          Large input values can cause the browser to freeze.
+             */
+            updateRepeticoes() {
+                try {
+                    const elem = document.getElementById('repeticoes');
+                    let num = elem.valueAsNumber;
+                    if (isNaN(num)) {
+                        return this.reportError("quantidade de repetições inválida", { source: 'updateRepeticoes' });
+                    }
+                    if (num > MAX_REPETITIONS) {
+                        num = MAX_REPETITIONS;
+                        elem.value = MAX_REPETITIONS;
+                    }
+                    document.querySelectorAll('.printimg').forEach((e) => e.parentElement.removeChild(e));
+                    for (let i = 0; i < num; i++) {
+                        const elem = document.createElement('img');
+                        elem.className = "printimg";
+                        document.body.appendChild(elem);
+                    }
+                    this.rebuildPrintTree();
+                } catch (e) {
+                    this.reportError(e, { source: 'updateRepeticoes' });
+                }
+            }
+
+            /**
+             * Reapplies styles and dimensions to all generated pattern images.
+             * Triggered by configuration changes or new image uploads.
+             *
+             * @description Validates inputs (height, width, border) and updates the status.
+             *              If height or width is 0, sets the style to "auto".
+             */
+            rebuildPrintTree() {
+                try {
+                    const imagem = document.getElementById("imagem").src;
+                    if (imagem === "") {
+                        return this.reportError("sem imagem definida", { source: 'rebuildPrintTree' });
+                    }
+                    const altura = document.getElementById("altura").valueAsNumber;
+                    document.getElementById("altura").value;
+                    if (isNaN(altura)) {
+                        return this.reportError("altura não é um número", { source: 'rebuildPrintTree' });
+                    }
+                    const largura = document.getElementById("largura").valueAsNumber;
+                    if (isNaN(largura)) {
+                        return this.reportError("largura não é um número", { source: 'rebuildPrintTree' });
+                    }
+                    const borda = document.getElementById("borda").valueAsNumber;
+                    if (isNaN(borda)) {
+                        return this.reportError("borda não é um número", { source: 'rebuildPrintTree' });
+                    }
+                    document.querySelectorAll(".printimg").forEach((e) => {
+                        e.src = imagem;
+                        if (largura === 0) {
+                            e.style.width = "auto";
+                        } else {
+                            e.style.width = `${largura}cm`;
+                        }
+                        if (altura === 0) {
+                            e.style.height = "auto";
+                        } else {
+                            e.style.height = `${altura}cm`;
+                        }
+                        e.style.borderWidth = `${borda}px`;
+                    });
+                    this.changeEstado("pronto");
+                } catch (e) {
+                    this.reportError(e, { source: 'rebuildPrintTree' });
+                }
+            }
         }
 
-        /**
-         * Updates the status text displayed to the user.
-         * Used to show errors or readiness state.
-         *
-         * @param {string} text - The message to display in the "ESTADO" field.
-         */
-        function changeEstado(text) {
-            document.getElementById("estado").innerText = text
-        }
+        window.appController = new AppController();
 
-        /**
-         * Handles the file drop event on the window.
-         * Prevents default browser behavior (opening file) and processes the dropped image.
-         *
-         * @param {DragEvent} ev - The drag event containing the file.
-         */
-        function onDrop(ev) {
-            ev.preventDefault()
-            console.log(ev)
-            changeImage(ev.dataTransfer.files[0])
-        }
-        /**
-         * Updates the number of image repetitions based on user input.
-         * Clears existing pattern elements and creates new ones.
-         *
-         * @warning This function performs synchronous DOM manipulation in a loop.
-         *          Large input values can cause the browser to freeze.
-         */
-        function updateRepeticoes() {
-            const elem = document.getElementById('repeticoes')
-            const num = elem.valueAsNumber
-            if (isNaN(num)) {
-                return changeEstado("quantidade de repetições inválida")
-            }
-            document.querySelectorAll('.printimg').forEach((e) => e.parentElement.removeChild(e))
-            for (let i = 0; i < num; i++) {
-                const elem = document.createElement('img')
-                elem.className = "printimg"
-                document.body.appendChild(elem)
-            }
-            rebuildPrintTree()
-        }
-        /**
-         * Reapplies styles and dimensions to all generated pattern images.
-         * Triggered by configuration changes or new image uploads.
-         *
-         * @description Validates inputs (height, width, border) and updates the status.
-         *              If height or width is 0, sets the style to "auto".
-         */
-        function rebuildPrintTree() {
-            const imagem = document.getElementById("imagem").src
-            if (imagem === "") {
-                return changeEstado("sem imagem definida")
-            }
-            const altura = document.getElementById("altura").valueAsNumber
-            document.getElementById("altura").value
-            if (isNaN(altura)) {
-                return changeEstado("altura não é um número")
-            }
-            const largura = document.getElementById("largura").valueAsNumber
-            if (isNaN(largura)) {
-                return changeEstado("largura não é um número")
-            }
-            const borda = document.getElementById("borda").valueAsNumber
-            if (isNaN(borda)) {
-                return changeEstado("borda não é um número")
-            }
-            document.querySelectorAll(".printimg").forEach((e) => {
-                e.src = imagem
-                if (largura === 0) {
-                    e.style.height = "auto"
-                } else {
-                    e.style.height = `${largura}cm`
-                }
-                if (altura === 0) {
-                    e.style.width = "auto"
-                } else {
-                    e.style.width = `${altura}cm`
-                }
-                e.style.borderWidth = `${borda}px`
-            })
-            changeEstado("pronto")
-        }
         /**
          * Initializes the application on page load.
          * - Parses query parameters for initial configuration (image URL, dimensions).
@@ -268,30 +319,36 @@
          * - Triggers initial render if parameters are present.
          */
         window.addEventListener('load', () => {
-            // query params
-            const params = new URLSearchParams(document.location.search.substring(1))
-            console.log(params)
-            // puxa valores dos query params
-            if (params.get("imagem")) {
-                document.getElementById("imagem").src = params.get("imagem")
+            try {
+                // query params
+                const params = new URLSearchParams(document.location.search.substring(1))
+                console.log(params)
+                // puxa valores dos query params
+                if (params.get("imagem")) {
+                    document.getElementById("imagem").src = params.get("imagem")
+                }
+                document.getElementById("altura").value = params.get("altura") || ""
+                document.getElementById("largura").value = params.get("largura") || ""
+                document.getElementById("borda").value = params.get("borda") || ""
+                document.getElementById("repeticoes").value = params.get("repeticoes") || "100"
+
+                // inscrição dos hooks
+                window.addEventListener('drop', window.appController.onDrop)
+                window.addEventListener('dragover', (ev) => ev.preventDefault())
+                const title = document.getElementById("title")
+                title.addEventListener('click', () => {
+                    document.getElementById("loadFile").click()
+                })
+                title.style.cursor = 'pointer'
+                document.getElementById('altura').addEventListener('change', window.appController.rebuildPrintTree)
+                document.getElementById('largura').addEventListener('change', window.appController.rebuildPrintTree)
+                document.getElementById('borda').addEventListener('change', window.appController.rebuildPrintTree)
+                document.getElementById('repeticoes').addEventListener('change', window.appController.updateRepeticoes)
+
+                window.appController.updateRepeticoes()
+            } catch (e) {
+                window.appController.reportError(e, { source: 'window.load' });
             }
-            document.getElementById("altura").value = params.get("altura") || ""
-            document.getElementById("largura").value = params.get("largura") || ""
-            document.getElementById("borda").value = params.get("borda") || ""
-            document.getElementById("repeticoes").value = params.get("repeticoes") || "100"
-            // inscrição dos hooks
-            window.addEventListener('drop', onDrop)
-            window.addEventListener('dragover', (ev) => ev.preventDefault())
-            const title = document.getElementById("title")
-            title.addEventListener('click', () => {
-                document.getElementById("loadFile").click()
-            })
-            title.style.cursor = 'pointer'
-            document.getElementById('altura').addEventListener('change', rebuildPrintTree)
-            document.getElementById('largura').addEventListener('change', rebuildPrintTree)
-            document.getElementById('borda').addEventListener('change', rebuildPrintTree)
-            document.getElementById('repeticoes').addEventListener('change', updateRepeticoes)
-            updateRepeticoes()
         })
     </script>
 </body>
