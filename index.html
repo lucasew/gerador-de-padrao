@@ -171,6 +171,7 @@
          * Creates a temporary object URL for the uploaded file and triggers a rebuild.
          *
          * @param {File} to - The image file object (from input or drag-and-drop).
+         * @note The created Object URL is not revoked, which may lead to memory leaks if used repeatedly.
          */
         function changeImage(to) {
             const url = window.URL.createObjectURL(to)
@@ -226,6 +227,9 @@
          *
          * @description Validates inputs (height, width, border) and updates the status.
          *              If height or width is 0, sets the style to "auto".
+         *
+         * @note There is currently a logic swap: the 'largura' (width) input sets the CSS `height`,
+         *       and the 'altura' (height) input sets the CSS `width`.
          */
         function rebuildPrintTree() {
             const imagem = document.getElementById("imagem").src
@@ -266,6 +270,13 @@
          * - Parses query parameters for initial configuration (image URL, dimensions).
          * - Sets up event listeners for drag-and-drop, file input, and configuration changes.
          * - Triggers initial render if parameters are present.
+         *
+         * Supported query parameters:
+         * - `imagem` {string}: URL of the initial image.
+         * - `altura` {number}: Height in cm (sets width style due to logic swap).
+         * - `largura` {number}: Width in cm (sets height style due to logic swap).
+         * - `borda` {number}: Border width in px.
+         * - `repeticoes` {number}: Number of image repetitions (default 100).
          */
         window.addEventListener('load', () => {
             // query params
